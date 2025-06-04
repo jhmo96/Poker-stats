@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+<meta charset=\"UTF-8\">
+<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+<title>Poker Stats Presentation</title>
+<script src=\"https://cdn.tailwindcss.com\"></script>
+<script crossorigin src=\"https://unpkg.com/react@18/umd/react.production.min.js\"></script>
+<script crossorigin src=\"https://unpkg.com/react-dom@18/umd/react-dom.production.min.js\"></script>
+<script src=\"https://unpkg.com/@babel/standalone/babel.min.js\"></script>
+<script src=\"https://unpkg.com/framer-motion/dist/framer-motion.umd.js\"></script>
+<style>body{margin:0;background:linear-gradient(to bottom right,#1e1b4b,#0369a1,#0f172a);color:#fff;font-family:sans-serif;}</style>
+</head>
+<body class=\"flex items-center justify-center min-h-screen p-4\">
+<div id=\"root\" class=\"w-full\"></div>
+<script type=\"text/babel\">
+const {AnimatePresence,motion}=window.framerMotion;
+const slides=[{title:\u201c\ud83c\udf89 20\u2009000 Hand Milestone!\u201d,body:<div className=\"space-y-4 text-center\"><p className=\"text-lg md:text-xl leading-relaxed\">2\ub9cc \ud578\ub4e4\ub97c \uc644\uc804\ud588\uc2b5\ub2c8\ub2e4!<br/><strong>Actual Won 14.2\u00a0bb/100</strong> \u2014 NL2 \ud544\ub4dc\ub97c \uc54c\ub9b0 \uacb0\uacfc\uc608\uc694.<br/>\uacc4\uc18d\ud574\uc11c \ub2e4\uc74c \ub808\ubca8\ub3c4 \uc815\ubcf4\ud574\ubcf4\uc138\uc694.</p></div>},{title:\u201c\ud55c\uc2e0 \uc9c0\ud45c \uc694\uc57d\u201d,body:<table className=\"w-full text-sm md:text-base\"><thead><tr className=\"border-b border-white/20 text-left\"><th className=\"py-1 pr-4\">\uc9c0\ud45c</th><th className=\"py-1 pr-4\">\ub2f9\uc2e0</th><th className=\"py-1 pr-4\">\ud3c9\uade0\uce58</th><th className=\"py-1\">\uad00\ucc28</th></tr></thead><tbody className=\"divide-y divide-white/10\"><tr><td>Actual Won</td><td>14.2 bb/100</td><td>5 bb/100</td><td className=\"text-emerald-400\">\uc0c1\uc704 1\u00a0%</td></tr><tr><td>Actual Won EV</td><td>14.6 bb/100</td><td>&#8212;</td><td>\ub7f0 \uc548\uc815</td></tr><tr><td>VPIP / PFR</td><td>27 / 23</td><td>21 / 17</td><td>LAG \uacbd\ud5d8</td></tr><tr><td>3-Bet</td><td>8.0&#8239;%</td><td>5&#8239;%</td><td>\uacf5\uaca9\uc801</td></tr></tbody></table>},{title:\u201c\uac15\uc810\u201d,body:<ul className=\"list-disc pl-6 space-y-1\"><li>Actual Won 14+&#8239;bb/100 \u2014 \ud544\ub4dc \ucc28\uc774\uc704</li><li>ATS 70&#8239;% & WWSF 54&#8239;% \u2192 \ub808\ub4dc\ub77c\uc778 \uc8fc\ub3c4</li><li>Turn C-Bet 82&#8239;%\ub85c \ud50c\ub85c\ud305 \uccb4\ubaa9</li><li>EV-Actual \uaca9\ucc28 \uc791\uc74c \u2192 \uae30\uc220 \uae30\ub2a5</li></ul>},{title:\u201c\uc57d\uc810\u201d,body:<ul className=\"list-decimal pl-6 space-y-1\"><li>River C-Bet 44&#8239;% & W%SD 49&#8239;% \u2192 \ub9ac\ubc84 \ub274\uc218</li><li>4-Bet-\ud3f4\ub4dc \ube44\uc728 \uc0c1\uc2b9 \u2192 \ub808\uc778\uc9c0 \uc624\uc5d4</li><li>Turn 82&#8239;% \u2198 River 44&#8239;% \u2014 \ud328\ud134 \uc77d\ud788\ubb34\ub974</li></ul>},{title:\u201c\uac1c\uc120 \uc81c\uc548\u201d,body:<ol className=\"list-decimal pl-6 space-y-1\"><li>\ub9ac\ubc84 \uccb4\ud06c-\ubc31/\ube14\ub7ec\ud504 \ube44\ub974 \uc7ac\uc870\uc815</li><li>\ubc8c\ub974\uac8c \uc911\uc2ec 4-Bet, \ube14\ub7ec\ud504 \ube44\uc728 \uac10\uc7a5</li><li>\uc77c\ubd80 \ubcf4\ub4dc Turn \uccb4\ud06c-\ubc31 \u2192 River \ubc1c\ub861</li></ol>}];
+
+const variants={enter:d=>({x:d>0?'100%':'-100%',opacity:0}),center:{x:0,opacity:1,transition:{duration:0.5}},exit:d=>({x:d>0?'-100%':'100%',opacity:0,transition:{duration:0.4}})};
+function App(){const[page,setPage]=React.useState(0);const[dir,setDir]=React.useState(0);const move=d=>{setDir(d);setPage(p=>(p+d+slides.length)%slides.length);};return(<div className=\"w-full max-w-3xl mx-auto flex flex-col items-center\"><AnimatePresence initial={false} custom={dir} mode=\"wait\"><motion.div key={page} custom={dir} variants={variants} initial=\"enter\" animate=\"center\" exit=\"exit\" className=\"w-full\"><div className=\"bg-slate-800/90 p-6 rounded-2xl border border-white/20 shadow-xl\"><h2 className=\"text-xl md:text-2xl font-semibold mb-4\">{slides[page].title}</h2>{slides[page].body}</div></motion.div></AnimatePresence><div className=\"flex gap-4 mt-6\"><button onClick={()=>move(-1)} className=\"px-3 py-1 bg-white/10 rounded-full hover:bg-white/20\">◀</button><button onClick={()=>move(1)} className=\"px-3 py-1 bg-white/10 rounded-full hover:bg-white/20\">▶</button></div><div className=\"flex gap-2 mt-4\">{slides.map((_,i)=>(<span key={i} onClick={()=>{setDir(i>page?1:-1);setPage(i);}} className={\`h-2 w-2 rounded-full cursor-pointer ${i===page?'bg-white':'bg-white/40'}\`}></span>))}</div></div>);}ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
