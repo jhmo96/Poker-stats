@@ -1,146 +1,126 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Poker Stats Slides</title>
-  <style>
-    /* ── 기본 테마 ─────────────────────────────────────────── */
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{
-      font-family:Arial,Helvetica,sans-serif;
-      background:linear-gradient(135deg,#1e1b4b,#0369a1,#0f172a);
-      color:#fff;display:flex;flex-direction:column;align-items:center;
-      justify-content:flex-start;min-height:100vh;padding:24px 12px;overflow:hidden}
-    /* 카드 / 슬라이드 */
-    .wrap{position:relative;width:92%;max-width:720px;margin-top:70px}
-    .slide{position:absolute;inset:0;opacity:0;transform:translateX(100%);
-           transition:transform .45s ease,opacity .45s ease}
-    .slide.active{opacity:1;transform:translateX(0)}
-    .card{
-      background:rgba(30,41,59,.92);border:1px solid #ffffff33;border-radius:20px;
-      padding:24px;box-shadow:0 6px 18px #0008;max-height:78vh;overflow:auto}
-    h2{text-align:center;font-size:1.35rem;margin-bottom:16px}
-    /* 표/리스트 */
-    table{width:100%;border-collapse:collapse;font-size:.92rem}
-    th,td{padding:6px 4px} thead tr{border-bottom:1px solid #ffffff55}
-    tbody tr{border-top:1px solid #ffffff33}
-    ul,ol{margin-left:18px;font-size:.92rem;line-height:1.5}
-    /* 이미지 */
-    img{width:100%;border-radius:12px;border:1px solid #ffffff33;margin-bottom:14px}
-    /* 네비게이터 */
-    .nav{display:flex;gap:10px;margin-top:16px}
-    .dot{width:11px;height:11px;border-radius:50%;background:#ffffff66;cursor:pointer}
-    .dot.active{background:#fff}
-    /* Prev / Next 버튼 */
-    .btnbox{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-            display:flex;gap:20px;z-index:100}
-    .btn{
-      min-width:78px;padding:10px 16px;font-weight:bold;font-size:.9rem;
-      border-radius:9999px;border:2px solid #ffffffaa;
-      background:#00000055;color:#fff;cursor:pointer}
-    .btn:hover{background:#ffffff33}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Poker Stats Slides</title>
+<style>
+  /* ── 공통 스타일 ───────────────────────────── */
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:system-ui,Arial,Helvetica,sans-serif;
+    background:linear-gradient(135deg,#1e1b4b,#0369a1,#0f172a);
+    color:#fff;display:flex;justify-content:flex-start;align-items:center;
+    flex-direction:column;min-height:100vh;padding:22px 8px;overflow:hidden}
+  /* 컨테이너 */
+  .wrap{position:relative;width:100%;max-width:720px;margin-top:6vh}
+  .slide{position:absolute;inset:0;opacity:0;transform:translateX(100%);
+         transition:transform .45s ease,opacity .45s ease}
+  .slide.active{opacity:1;transform:translateX(0)}
+  /* 카드 & 내부 레이아웃 */
+  .card{
+    background:rgba(30,41,59,.92);border:1px solid #ffffff33;border-radius:18px;
+    padding:20px 18px;box-shadow:0 6px 18px #0008;max-height:78vh;
+    display:flex;flex-direction:column;gap:16px;overflow:auto}
+  h2{text-align:center;font-size:1.3rem}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th,td{padding:6px 4px} thead tr{border-bottom:1px solid #ffffff55}
+  tbody tr{border-top:1px solid #ffffff33}
+  ul,ol{margin-left:18px;font-size:.9rem;line-height:1.5}
+  img{width:100%;border-radius:12px;border:1px solid #ffffff33}
+  /* 네비게이터 점 */
+  .nav{display:flex;gap:10px;margin-top:12px;justify-content:center}
+  .dot{width:11px;height:11px;border-radius:50%;background:#ffffff66;cursor:pointer}
+  .dot.active{background:#fff}
+  /* 버튼 – 카드 내부 footer */
+  .btnbox{display:flex;justify-content:center;gap:18px;margin-top:auto}
+  .btn{
+    min-width:68px;padding:8px 14px;font-size:.85rem;font-weight:bold;
+    border-radius:9999px;border:2px solid #ffffffaa;
+    background:#00000055;color:#fff;cursor:pointer}
+  .btn:hover{background:#ffffff33}
+</style>
 </head>
 <body>
 
-<!-- 슬라이드 컨테이너 -->
 <div class="wrap" id="slides"></div>
-
-<!-- Prev / Next -->
-<div class="btnbox">
-  <button class="btn" id="prev">◀ Prev</button>
-  <button class="btn" id="next">Next ▶</button>
-</div>
-<!-- 점 네비게이터 -->
 <div class="nav" id="dots"></div>
 
 <script>
 /* ── 슬라이드 데이터 ───────────────────────── */
 const slides=[
-  {
-    title:"🎉 20 000-Hand Milestone!",
-    html:`<img src="graph20k.png" alt="20k graph">
-          <p style="text-align:center;font-size:1.05rem">
-            20 000 핸드를 완주했습니다!<br>
-            <strong>Actual Won&nbsp;14.2&nbsp;bb/100</strong> &nbsp;– NL2 상위&nbsp;1&nbsp;%</p>`
-  },
-  {
-    title:"전체 지표 요약",
-    html:`<table>
-      <thead><tr><th>지표</th><th>값</th><th>관찰</th></tr></thead><tbody>
-        <tr><td>Actual Won</td><td>14.2 bb/100</td><td style="color:#34d399">상위 1 %</td></tr>
-        <tr><td>Actual Won EV</td><td>14.6 bb/100</td><td>런 안정</td></tr>
-        <tr><td>Won</td><td>11.9 bb/100</td><td>레이크 없이도 고수익</td></tr>
-        <tr><td>Won EV</td><td>12.3 bb/100</td><td>EV→실수익 런악 살짝</td></tr>
-        <tr><td>VPIP / PFR</td><td>27 / 23</td><td>LAG 성향</td></tr>
-        <tr><td>3-Bet</td><td>8 %</td><td>프리플랍 압박</td></tr>
-        <tr><td>ATS</td><td>70 %</td><td>블라인드 탈취 특화</td></tr>
-        <tr><td>Fold to 3-Bet</td><td>50 %</td><td>방어↑ 레인지 주의</td></tr>
-        <tr><td>C-Bet Flop / Turn / River</td><td>70 / 82 / 44 %</td><td>턴↑ 리버↓</td></tr>
-        <tr><td>WTSD / W%SD</td><td>26 % / 49 %</td><td>리버 누수</td></tr>
-        <tr><td>WWSF</td><td>54 %</td><td>레드라인 강점</td></tr>
-        <tr><td>Total AFq</td><td>49 %</td><td>턴까지 적극</td></tr>
-        <tr><td>Rake Paid</td><td>8.7 bb/100</td><td>평균 범위</td></tr>
-      </tbody></table>`
-  },
-  {
-    title:"강점",
-    html:`<ul>
-      <li>Actual Won 14+ bb/100 – 압도적 수익률</li>
-      <li>ATS 70 % & WWSF 54 % → 레드라인 수익 확보</li>
-      <li>플랍·턴 총 AFq 61 % → 주도권 장악</li>
-    </ul>`
-  },
-  {
-    title:"약점",
-    html:`<ol>
-      <li>River C-Bet 44 % & W%SD 49 % → 리버 밸런스 부족</li>
-      <li>4-Bet-폴드 빈도 ↑ → 레인지 오염 위험</li>
-      <li>Turn 82 % ↘ River 44 % – 패턴 노출 우려</li>
-    </ol>`
-  },
-  {
-    title:"개선점 + 뱅크롤 플랜<br>(20 BI / 18 BI 룰)",
-    html:`<ol>
-      <li>리버 체크-백·블러프 빈도 재조정</li>
-      <li>밸류 중심 4-Bet, 블러프 비율 감축</li>
-      <li>Turn 일부 체크-백 → River 레인지 보호</li>
-    </ol><br>
-    <table>
-      <thead><tr><th>뱅크롤</th><th>액션</th></tr></thead><tbody>
-        <tr><td>≥ 20 BI (NL5)</td><td>NL5 샷테이크 시작</td></tr>
-        <tr><td>&lt; 18 BI</td><td>즉시 NL2 복귀</td></tr>
-        <tr><td>NL2 복귀 후 +$10</td><td>샷테이크 재개</td></tr>
-      </tbody></table>`
-  }
+  {title:"🎉 20 000-Hand Milestone!",
+   html:`<img src="graph20k.png" alt="Graph">
+         <p style="text-align:center;font-size:1.05rem">
+           20 000 핸드 달성!<br><strong>Actual Won 14.2 bb/100</strong><br>
+           NL2 필드를 압도했습니다.
+         </p>`},
+  {title:"전체 지표 요약",
+   html:`<table><thead><tr><th>지표</th><th>값</th><th>관찰</th></tr></thead><tbody>
+     <tr><td>Actual Won</td><td>14.2 bb/100</td><td style="color:#34d399">상위 1 %</td></tr>
+     <tr><td>Actual Won EV</td><td>14.6 bb/100</td><td>런 안정</td></tr>
+     <tr><td>Won</td><td>11.9 bb/100</td><td>레이크 제외 고수익</td></tr>
+     <tr><td>VPIP / PFR</td><td>27 / 23</td><td>LAG</td></tr>
+     <tr><td>3-Bet</td><td>8 %</td><td>프리플랍 압박</td></tr>
+     <tr><td>ATS</td><td>70 %</td><td>블라인드 탈취</td></tr>
+     <tr><td>Fold-to-3-Bet</td><td>50 %</td><td>방어↑</td></tr>
+     <tr><td>C-Bet F/T/R</td><td>70 / 82 / 44 %</td><td>턴↑ 리버↓</td></tr>
+     <tr><td>WTSD / W%SD</td><td>26 % / 49 %</td><td>리버 누수</td></tr>
+     <tr><td>WWSF</td><td>54 %</td><td>레드라인 강점</td></tr>
+     <tr><td>Total AFq</td><td>49 %</td><td>턴까지 적극</td></tr>
+   </tbody></table>`},
+  {title:"강점",
+   html:`<ul>
+     <li>Actual Won 14+ bb/100 – 압도적 수익률</li>
+     <li>ATS 70 % & WWSF 54 % → 레드라인 수익 확보</li>
+     <li>플랍·턴 총 AFq 61 % → 주도권 장악</li>
+   </ul>`},
+  {title:"약점",
+   html:`<ol>
+     <li>River C-Bet 44 % & W%SD 49 % → 리버 밸런스 부족</li>
+     <li>4-Bet-폴드 빈도 ↑ → 레인지 오염</li>
+     <li>Turn 82 % ↘ River 44 % – 패턴 노출 우려</li>
+   </ol>`},
+  {title:"개선·뱅크롤 플랜 (20 / 18 BI)",
+   html:`<ol>
+     <li>리버 체크-백/블러프 빈도 조정</li>
+     <li>밸류 중심 4-Bet, 블러프 ↓</li>
+     <li>Turn 일부 체크-백 → River 레인지 보호</li>
+   </ol><br>
+   <table><thead><tr><th>뱅크롤</th><th>액션</th></tr></thead><tbody>
+     <tr><td>≥ 20 BI (NL5)</td><td>NL5 샷테이크 시작</td></tr>
+     <tr><td>&lt; 18 BI</td><td>NL2로 즉시 복귀</td></tr>
+     <tr><td>NL2 복귀 후 +$10</td><td>샷테이크 재도전</td></tr>
+   </tbody></table>`}
 ];
 
-/* ── 슬라이드 렌더링 ───────────────────────── */
+/* ── 렌더링 ───────────────────────────────── */
 const wrap=document.getElementById('slides');
 const dots=document.getElementById('dots');
 let cur=0;
-
 slides.forEach((s,i)=>{
   wrap.insertAdjacentHTML('beforeend',
     `<div class="slide${i===0?' active':''}">
-       <div class="card"><h2>${s.title}</h2>${s.html}</div>
+       <div class="card">
+         <h2>${s.title}</h2>${s.html}
+         <div class="btnbox">
+           <button class="btn" onclick="prev()">◀ Prev</button>
+           <button class="btn" onclick="next()">Next ▶</button>
+         </div>
+       </div>
      </div>`);
   const d=document.createElement('span');
-  d.className='dot'+(i===0?' active':''); d.onclick=()=>go(i);
-  dots.appendChild(d);
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=()=>go(i);dots.appendChild(d);
 });
-
-/* ── 네비 & 버튼 ──────────────────────────── */
 function go(n){
   if(n===cur) return;
-  const els=wrap.children;
-  els[cur].classList.remove('active'); dots.children[cur].classList.remove('active');
-  els[n].classList.add('active');      dots.children[n].classList.add('active');
+  wrap.children[cur].classList.remove('active');dots.children[cur].classList.remove('active');
+  wrap.children[n].classList.add('active');dots.children[n].classList.add('active');
   cur=n;
 }
-document.getElementById('prev').onclick=()=>go((cur-1+slides.length)%slides.length);
-document.getElementById('next').onclick=()=>go((cur+1)%slides.length);
+function prev(){ go((cur-1+slides.length)%slides.length); }
+function next(){ go((cur+1)%slides.length); }
 </script>
 </body>
 </html>
