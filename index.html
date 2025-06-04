@@ -1,24 +1,129 @@
 <!DOCTYPE html>
-<html lang=\"en\">
+<html lang="en">
 <head>
-<meta charset=\"UTF-8\">
-<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-<title>Poker Stats Presentation</title>
-<script src=\"https://cdn.tailwindcss.com\"></script>
-<script crossorigin src=\"https://unpkg.com/react@18/umd/react.production.min.js\"></script>
-<script crossorigin src=\"https://unpkg.com/react-dom@18/umd/react-dom.production.min.js\"></script>
-<script src=\"https://unpkg.com/@babel/standalone/babel.min.js\"></script>
-<script src=\"https://unpkg.com/framer-motion/dist/framer-motion.umd.js\"></script>
-<style>body{margin:0;background:linear-gradient(to bottom right,#1e1b4b,#0369a1,#0f172a);color:#fff;font-family:sans-serif;}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Poker Stats Slides</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:linear-gradient(135deg,#1e1b4b,#0369a1,#0f172a);
+  color:#fff;display:flex;flex-direction:column;align-items:center;
+  justify-content:flex-start;min-height:100vh;padding:24px 12px;overflow:hidden}
+.wrap{position:relative;width:92%;max-width:720px;margin-top:70px}  /* ← 박스 살짝 내려놓음 */
+.slide{position:absolute;inset:0;opacity:0;transform:translateX(100%);
+       transition:transform .45s ease,opacity .45s ease}
+.slide.active{opacity:1;transform:translateX(0)}
+.card{
+  background:rgba(30,41,59,.92);border:1px solid #ffffff33;border-radius:20px;
+  padding:24px;box-shadow:0 6px 18px #0008;max-height:78vh;overflow:auto}
+h2{text-align:center;font-size:1.35rem;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{padding:6px 4px} thead tr{border-bottom:1px solid #ffffff55}
+tbody tr{border-top:1px solid #ffffff33}
+ul,ol{margin-left:18px;font-size:.95rem;line-height:1.5}
+img{width:100%;border-radius:12px;border:1px solid #ffffff33;margin-bottom:14px}
+.nav{display:flex;gap:10px;margin-top:16px}
+.dot{width:11px;height:11px;border-radius:50%;background:#ffffff66;cursor:pointer}
+.dot.active{background:#fff}
+.btnbox{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+        display:flex;gap:20px;z-index:100}
+.btn{
+  min-width:78px;padding:10px 16px;font-weight:bold;font-size:.9rem;
+  border-radius:9999px;border:2px solid #ffffffaa;
+  background:#00000055;color:#fff;cursor:pointer}
+.btn:hover{background:#ffffff33}
+</style>
 </head>
-<body class=\"flex items-center justify-center min-h-screen p-4\">
-<div id=\"root\" class=\"w-full\"></div>
-<script type=\"text/babel\">
-const {AnimatePresence,motion}=window.framerMotion;
-const slides=[{title:\u201c\ud83c\udf89 20\u2009000 Hand Milestone!\u201d,body:<div className=\"space-y-4 text-center\"><p className=\"text-lg md:text-xl leading-relaxed\">2\ub9cc \ud578\ub4e4\ub97c \uc644\uc804\ud588\uc2b5\ub2c8\ub2e4!<br/><strong>Actual Won 14.2\u00a0bb/100</strong> \u2014 NL2 \ud544\ub4dc\ub97c \uc54c\ub9b0 \uacb0\uacfc\uc608\uc694.<br/>\uacc4\uc18d\ud574\uc11c \ub2e4\uc74c \ub808\ubca8\ub3c4 \uc815\ubcf4\ud574\ubcf4\uc138\uc694.</p></div>},{title:\u201c\ud55c\uc2e0 \uc9c0\ud45c \uc694\uc57d\u201d,body:<table className=\"w-full text-sm md:text-base\"><thead><tr className=\"border-b border-white/20 text-left\"><th className=\"py-1 pr-4\">\uc9c0\ud45c</th><th className=\"py-1 pr-4\">\ub2f9\uc2e0</th><th className=\"py-1 pr-4\">\ud3c9\uade0\uce58</th><th className=\"py-1\">\uad00\ucc28</th></tr></thead><tbody className=\"divide-y divide-white/10\"><tr><td>Actual Won</td><td>14.2 bb/100</td><td>5 bb/100</td><td className=\"text-emerald-400\">\uc0c1\uc704 1\u00a0%</td></tr><tr><td>Actual Won EV</td><td>14.6 bb/100</td><td>&#8212;</td><td>\ub7f0 \uc548\uc815</td></tr><tr><td>VPIP / PFR</td><td>27 / 23</td><td>21 / 17</td><td>LAG \uacbd\ud5d8</td></tr><tr><td>3-Bet</td><td>8.0&#8239;%</td><td>5&#8239;%</td><td>\uacf5\uaca9\uc801</td></tr></tbody></table>},{title:\u201c\uac15\uc810\u201d,body:<ul className=\"list-disc pl-6 space-y-1\"><li>Actual Won 14+&#8239;bb/100 \u2014 \ud544\ub4dc \ucc28\uc774\uc704</li><li>ATS 70&#8239;% & WWSF 54&#8239;% \u2192 \ub808\ub4dc\ub77c\uc778 \uc8fc\ub3c4</li><li>Turn C-Bet 82&#8239;%\ub85c \ud50c\ub85c\ud305 \uccb4\ubaa9</li><li>EV-Actual \uaca9\ucc28 \uc791\uc74c \u2192 \uae30\uc220 \uae30\ub2a5</li></ul>},{title:\u201c\uc57d\uc810\u201d,body:<ul className=\"list-decimal pl-6 space-y-1\"><li>River C-Bet 44&#8239;% & W%SD 49&#8239;% \u2192 \ub9ac\ubc84 \ub274\uc218</li><li>4-Bet-\ud3f4\ub4dc \ube44\uc728 \uc0c1\uc2b9 \u2192 \ub808\uc778\uc9c0 \uc624\uc5d4</li><li>Turn 82&#8239;% \u2198 River 44&#8239;% \u2014 \ud328\ud134 \uc77d\ud788\ubb34\ub974</li></ul>},{title:\u201c\uac1c\uc120 \uc81c\uc548\u201d,body:<ol className=\"list-decimal pl-6 space-y-1\"><li>\ub9ac\ubc84 \uccb4\ud06c-\ubc31/\ube14\ub7ec\ud504 \ube44\ub974 \uc7ac\uc870\uc815</li><li>\ubc8c\ub974\uac8c \uc911\uc2ec 4-Bet, \ube14\ub7ec\ud504 \ube44\uc728 \uac10\uc7a5</li><li>\uc77c\ubd80 \ubcf4\ub4dc Turn \uccb4\ud06c-\ubc31 \u2192 River \ubc1c\ub861</li></ol>}];
+<body>
 
-const variants={enter:d=>({x:d>0?'100%':'-100%',opacity:0}),center:{x:0,opacity:1,transition:{duration:0.5}},exit:d=>({x:d>0?'-100%':'100%',opacity:0,transition:{duration:0.4}})};
-function App(){const[page,setPage]=React.useState(0);const[dir,setDir]=React.useState(0);const move=d=>{setDir(d);setPage(p=>(p+d+slides.length)%slides.length);};return(<div className=\"w-full max-w-3xl mx-auto flex flex-col items-center\"><AnimatePresence initial={false} custom={dir} mode=\"wait\"><motion.div key={page} custom={dir} variants={variants} initial=\"enter\" animate=\"center\" exit=\"exit\" className=\"w-full\"><div className=\"bg-slate-800/90 p-6 rounded-2xl border border-white/20 shadow-xl\"><h2 className=\"text-xl md:text-2xl font-semibold mb-4\">{slides[page].title}</h2>{slides[page].body}</div></motion.div></AnimatePresence><div className=\"flex gap-4 mt-6\"><button onClick={()=>move(-1)} className=\"px-3 py-1 bg-white/10 rounded-full hover:bg-white/20\">◀</button><button onClick={()=>move(1)} className=\"px-3 py-1 bg-white/10 rounded-full hover:bg-white/20\">▶</button></div><div className=\"flex gap-2 mt-4\">{slides.map((_,i)=>(<span key={i} onClick={()=>{setDir(i>page?1:-1);setPage(i);}} className={\`h-2 w-2 rounded-full cursor-pointer ${i===page?'bg-white':'bg-white/40'}\`}></span>))}</div></div>);}ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+<div class="wrap" id="slides"></div>
+
+<div class="btnbox">
+  <button class="btn" id="prev">◀ Prev</button>
+  <button class="btn" id="next">Next ▶</button>
+</div>
+<div class="nav" id="dots"></div>
+
+<script>
+/* ── 슬라이드 데이터 ───────────────────────── */
+const slides=[
+  {title:"🎉 20 000-Hand Milestone!",
+   html:`<img src="graph20k.png" alt="Graph">
+         <p style="text-align:center;font-size:1.05rem">
+           20 000 핸드 달성!<br><strong>Actual Won 14.2 bb/100</strong><br>
+           NL2 필드를 압도했습니다.
+         </p>`},
+  {title:"핵심 지표 요약",
+   html:`<table><thead><tr>
+           <th>지표</th><th>당신</th><th>평균치</th><th>관찰</th></tr></thead><tbody>
+           <tr><td>Actual Won</td><td>14.2 bb/100</td><td>5 bb/100</td>
+               <td style="color:#34d399">상위 1 %</td></tr>
+           <tr><td>Actual Won EV</td><td>14.6 bb/100</td><td>–</td><td>런 안정</td></tr>
+           <tr><td>VPIP / PFR</td><td>27 / 23</td><td>21 / 17</td><td>LAG</td></tr>
+           <tr><td>3-Bet</td><td>8 %</td><td>5 %</td><td>공격적</td></tr>
+         </tbody></table>`},
+  {title:"강점",
+   html:`<ul>
+     <li>Actual Won 14+ bb/100 – 필드 최상위</li>
+     <li>ATS 70 % · WWSF 54 % → 레드라인 주도</li>
+     <li>Turn C-Bet 82 %로 플로팅 차단</li>
+     <li>EV-Actual 격차 작음 → 기술 기반</li>
+   </ul>`},
+  {title:"약점",
+   html:`<ol>
+     <li>River C-Bet 44 % · W%SD 49 % → 리버 누수</li>
+     <li>4-Bet-폴드 빈도 ↑ → 레인지 오염</li>
+     <li>Turn 82 % ↘ River 44 % → 패턴 노출</li>
+   </ol>`},
+  {title:"개선 제안",
+   html:`<ol>
+     <li>리버 체크-백/블러프 빈도 재조정</li>
+     <li>밸류 중심 4-Bet, 블러프 비율 감축</li>
+     <li>Turn 체크-백 라인 도입 → River 밸런스</li>
+   </ol>`},
+  {title:"다음 목표",
+   html:`<ul>
+     <li><strong>NL5 샷테이크 성공</strong> (20 BI → 18 BI 복귀 규칙 적용)</li>
+     <li>리버 W%SD ≥ 52 %로 개선</li>
+     <li>플롭·턴·리버 C-Bet 밸런스 정교화</li>
+   </ul>`},
+  {title:"뱅크롤 플랜 (20 BI / 18 BI 룰)",
+   html:`<table><thead><tr><th>롤 크기</th><th>액션</th></tr></thead><tbody>
+     <tr><td>≥ 20 BI (NL5 100 bb)</td><td>NL5 입장</td></tr>
+     <tr><td>18 BI 미만</td><td>즉시 NL2 복귀</td></tr>
+     <tr><td>복귀 후 \$+10</td><td>다시 샷테이크 시도</td></tr>
+   </tbody></table>`}
+];
+
+/* ── 렌더링 ──────────────────────────────── */
+const wrap=document.getElementById('slides');
+const dots=document.getElementById('dots');
+let cur=0;
+
+slides.forEach((s,i)=>{
+  wrap.insertAdjacentHTML('beforeend',
+    `<div class="slide${i===0?' active':''}">
+       <div class="card"><h2>${s.title}</h2>${s.html}</div>
+     </div>`);
+  const d=document.createElement('span');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=()=>go(i);dots.appendChild(d);
+});
+
+function go(n){
+  if(n===cur) return;
+  const els=wrap.children;
+  els[cur].classList.remove('active');
+  dots.children[cur].classList.remove('active');
+  els[n].classList.add('active');
+  dots.children[n].classList.add('active');
+  cur=n;
+}
+
+document.getElementById('prev').onclick=()=>go((cur-1+slides.length)%slides.length);
+document.getElementById('next').onclick=()=>go((cur+1)%slides.length);
 </script>
 </body>
 </html>
